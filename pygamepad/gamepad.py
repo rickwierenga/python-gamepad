@@ -59,32 +59,23 @@ class Gamepad(object):
             return None
 
     def _read_gamepad(self):
-        self.changed = False
         state = self._getState()
-        if not state is None:
+        self.changed = state is not None
+        if self.changed:
             self._old_state = self._state
             self._state = state
-            self.changed = True
 
     def X_was_released(self):
-        if (self._state[3] != 64) & (self._old_state[3] == 64):
-            return True
-        return False
+        return self.changed and (self._state[3] != 64) & (self._old_state[3] == 64)
 
     def Y_was_released(self):
-        if (self._state[3] != 128) & (self._old_state[3] == 128):
-            return True
-        return False
+        return self.changed and (self._state[3] != 128) & (self._old_state[3] == 128)
 
     def A_was_released(self):
-        if (self._state[3] != 16) & (self._old_state[3] == 16):
-            return True
-        return False
+        return self.changed and (self._state[3] != 16) & (self._old_state[3] == 16)
 
     def B_was_released(self):
-        if (self._state[3] != 32) & (self._old_state[3] == 32):
-            return True
-        return False
+        return self.changed and (self._state[3] != 32) & (self._old_state[3] == 32)
 
     def get_state(self):
         return self._state[:]
