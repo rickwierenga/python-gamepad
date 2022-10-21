@@ -49,9 +49,9 @@ class Gamepad(object):
         else:
             RuntimeError("Could not initialize Gamepad")
 
-    def _getState(self):
+    def _getState(self, timeout=200):
        try:
-            data = self._dev.interruptRead(0x81,0x20,2000)
+            data = self._dev.interruptRead(0x81, 0x20, timeout=timeout)
             data = struct.unpack('<'+'B'*20, data)
             return data
        except usb.core.USBError as e:
