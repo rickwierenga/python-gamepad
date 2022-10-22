@@ -13,7 +13,13 @@ default_state = (0, 20, 0, 0, 0, 0, 123, 251, 128, 0, 128, 0, 128, 0, 0, 0, 0, 0
 
 class Gamepad(object):
 
-    def __init__(self):
+    def __init__(self, serial=None):
+        """ Initialize the gamepad.
+
+        Args:
+            serial: Serial number of the gamepad. If None, the first gamepad found is used.
+        """
+
         self.is_initialized = False
         d=None
         busses = usb.busses()
@@ -21,6 +27,8 @@ class Gamepad(object):
             devs = bus.devices
             for dev in devs:
                 if dev.idVendor == 0x046d and dev.idProduct == 0xc21d:
+                    if serial is not None and usb.util.get_string(dev.dev, dev.iSerialNumber) != serial:
+                        continue
                     d = dev
         #conf = d.configurations[0]
         #intf = conf.interfaces[0][0]
@@ -47,7 +55,9 @@ class Gamepad(object):
             self.is_initialized = True
             print("Gamepad initialized")
         else:
-            RuntimeError("Could not initialize Gamepad")
+            if serial is not None:
+                raise RuntimeError(f"Device with serial number '{serial}' not found")
+            raise RuntimeError("Could not initialize Gamepad")
 
     def _getState(self, timeout=200):
        try:
