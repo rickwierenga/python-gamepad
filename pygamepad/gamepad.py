@@ -59,7 +59,7 @@ class Gamepad(object):
                 raise RuntimeError(f"Device with serial number '{serial}' not found")
             raise RuntimeError("Could not initialize Gamepad")
 
-    def _getState(self, timeout=200):
+    def _getState(self, timeout):
        try:
             data = self._dev.interruptRead(0x81, 0x20, timeout=timeout)
             data = struct.unpack('<'+'B'*20, data)
@@ -68,8 +68,8 @@ class Gamepad(object):
             #print(e)
             return None
 
-    def _read_gamepad(self):
-        state = self._getState()
+    def read_gamepad(self, timeout=200):
+        state = self._getState(timeout=timeout)
         self.changed = state is not None
         if self.changed:
             self._old_state = self._state
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
     pad = Gamepad()
     while True:
-        pad._read_gamepad()
+        pad.read_gamepad()
         if pad.changed:
             print(pad._state)
             #print("analog R: {0:3}|{1:3}  analog L: {2:3}|{3:3}".format(pad.get_analogR_x(),pad.get_analogR_y(),pad.get_analogL_x(),pad.get_analogL_y()))
